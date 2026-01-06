@@ -87,6 +87,10 @@ export default function AuthPage() {
                 placeholder="输入授权码"
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
+                autoCorrect="off"
+                autoCapitalize="characters"
+                spellCheck="false"
+                autoComplete="off"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -102,6 +106,7 @@ export default function AuthPage() {
                 placeholder="输入你的姓名"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -117,6 +122,7 @@ export default function AuthPage() {
                 placeholder="输入你的邮箱"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -147,7 +153,7 @@ export default function AuthPage() {
               <p>• 您的答题数据仅保存在本地，不会上传至第三方</p>
               <p>• 考试过程中不会显示分数，保护您的隐私</p>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <input
                 id="privacy"
