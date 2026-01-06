@@ -1,0 +1,304 @@
+{
+  "codes": [
+    {
+      "code": "EXAM2601A1",
+      "status": "used",
+      "usedAt": "2026-01-06T09:57:51.931Z",
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601A2",
+      "status": "used",
+      "usedAt": "2026-01-06T10:10:02.605Z",
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601A3",
+      "status": "used",
+      "usedAt": "2026-01-06T10:21:39.688Z",
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601A4",
+      "status": "used",
+      "usedAt": "2026-01-06T10:22:29.480Z",
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601A5",
+      "status": "used",
+      "usedAt": "2026-01-06T10:33:55.675Z",
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601B1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601B2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601B3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601B4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601B5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601C1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601C2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601C3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601C4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601C5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601D1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601D2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601D3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601D4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601D5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601E1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601E2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601E3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601E4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601E5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601F1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601F2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601F3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601F4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601F5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601G1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601G2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601G3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601G4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601G5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601H1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601H2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601H3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601H4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601H5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601J1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601J2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601J3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601J4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601J5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601K1",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601K2",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601K3",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601K4",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "code": "EXAM2601K5",
+      "status": "unused",
+      "usedAt": null,
+      "usedBy": null
+    }
+  ]
+}
