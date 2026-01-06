@@ -12,39 +12,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH Key
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh/
-          # 写入私钥
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          
-          # 添加主机指纹
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-          
-          echo "🔍 正在检查私钥格式..."
-          # 验证私钥文件是否有效 (如果这里报错，说明 Secrets 里的内容格式还是不对)
-          ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null && echo "✅ 私钥格式有效" || echo "❌ 私钥文件损坏！请检查 Secrets 复制过程"
 
-      - name: Connection Test (Debug)
+      - name: Deploy
         run: |
-          echo "🚀 正在尝试连接服务器 (详细模式)..."
-          # -v 参数会打印出连接过程（是网络不通还是密码错误）
-          ssh -v -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "echo '✅ 连接成功！'"
-
-      - name: Deploy Script
-        if: success()
-        run: |
+          echo "🚀 开始部署..."
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
             set -e
+            
+            # 1. 更新代码
             cd /root/aitest
+            echo '📥 拉取最新代码...'
             git fetch --all
             git reset --hard origin/main
+            
+            # 2. 后端部署
+            echo '🔧 后端构建中...'
             cd exam-backend
             npm install --production
             pm2 restart aitest-backend || pm2 start server.js --name aitest-backend
+            
+            # 3. 前端部署
+            echo '🎨 前端构建中...'
             cd ../exam-frontend
             npm install
             npm run build
-            echo '✅ 部署全部完成'
+            
+            echo '✅ 部署成功！'
+            pm2 status
           "
