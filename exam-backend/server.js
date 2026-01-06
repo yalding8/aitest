@@ -138,10 +138,22 @@ const selectRandomQuestions = (count = 30, position) => {
  * 计算分数
  */
 const calculateScore = (questions, answers) => {
-  let score = 0;
-  const totalScore = questions.reduce((sum, q) => sum + q.score, 0);
+  let totalScore = 0;
+  let earnedScore = 0;
+
+  // 维度统计
+  const dimensionStats = {};
 
   questions.forEach(q => {
+    // 初始化维度统计
+    if (!dimensionStats[q.category]) {
+      dimensionStats[q.category] = { total: 0, earned: 0, count: 0 };
+    }
+
+    dimensionStats[q.category].total += q.score;
+    dimensionStats[q.category].count += 1;
+    totalScore += q.score;
+
     const userAnswer = answers[q.id];
     if (!userAnswer) return;
 
@@ -152,12 +164,56 @@ const calculateScore = (questions, answers) => {
         : userAnswer === q.answer;
 
     if (isCorrect) {
-      score += q.score;
+      earnedScore += q.score;
+      dimensionStats[q.category].earned += q.score;
     }
   });
 
-  // 标准化到 100 分
-  return Math.round((score / totalScore) * 100);
+  // 计算最终得分 (标准化到 100 分)
+  // 如果题目总分不是100，这里会按比例折算
+  const finalScore = totalScore > 0 ? Math.round((earnedScore / totalScore) * 100) : 0;
+
+  return {
+    score: finalScore,
+    dimensions: dimensionStats
+  };
+};
+
+/**
+ * 生成智能总结
+ */
+const generateSmartSummary = (score, dimensions) => {
+  // 1. 总体评价
+  let summary = "";
+  if (score >= 90) summary += "🌟 **总体评价**：卓越！该候选人展现了极高的 AI 应用能力和业务理解力。\n";
+  else if (score >= 80) summary += "✨ **总体评价**：优秀。具备扎实的 AI 技能，能很好地应对业务场景。\n";
+  else if (score >= 70) summary += "✅ **总体评价**：合格。基本掌握 AI 工具，但在部分复杂场景下需加强。\n";
+  else summary += "⚠️ **总体评价**：未达标。建议系统学习 AI 工具并在业务中多加实践。\n";
+
+  // 2. 维度分析
+  const dimArray = Object.entries(dimensions).map(([name, data]) => ({
+    name,
+    rate: data.total > 0 ? (data.earned / data.total) : 0
+  }));
+
+  // 找出优势 (得分率 100% 或 > 80%)
+  const strengths = dimArray.filter(d => d.rate >= 0.8).map(d => d.name);
+  // 找出弱势 (得分率 < 60%)
+  const weaknesses = dimArray.filter(d => d.rate < 0.6).map(d => d.name);
+
+  if (strengths.length > 0) {
+    summary += `> 💪 **优势领域**：${strengths.slice(0, 3).join('、')}${strengths.length > 3 ? '等' : ''}\n`;
+  }
+
+  if (weaknesses.length > 0) {
+    summary += `> 💡 **提升建议**：建议重点加强 **${weaknesses.slice(0, 3).join('、')}** 方面的能力，提升解决复杂问题的效率。`;
+  } else if (score < 100) {
+    summary += `> 📈 **提升建议**：整体表现均衡，可在细节处理上追求极致。`;
+  } else {
+    summary += `> 🏆 **完美表现**：无可挑剔，建议将其经验在团队内推广。`;
+  }
+
+  return summary;
 };
 
 const pushToWebhook = async (examData) => {
@@ -174,7 +230,7 @@ const pushToWebhook = async (examData) => {
     const payload = {
       msgtype: 'markdown',
       markdown: {
-        content: `## AI应用及思考能力测试结果\n\n**姓名:** <font color="info">${examData.name}</font>\n**邮箱:** ${examData.email}\n**岗位:** ${examData.position}\n**分数:** <font color="warning">${examData.score}/100</font>\n**状态:** <font color="${examData.score >= 80 ? 'info' : 'warning'}">${examData.score >= 80 ? '✅ 及格' : '❌ 不及格'}</font>\n**用时:** ${Math.round(examData.duration / 60)}分钟`
+        content: `## AI应用及思考能力测试结果\n\n**姓名:** <font color="info">${examData.name}</font>\n**邮箱:** ${examData.email}\n**岗位:** ${examData.position}\n**分数:** <font color="warning">${examData.score}/100</font>\n**状态:** <font color="${examData.score >= 70 ? 'info' : 'warning'}">${examData.score >= 70 ? '✅ 及格' : '❌ 不及格'}</font>\n**用时:** ${Math.round(examData.duration / 60)}分钟\n\n----------\n\n${examData.summary || '暂无智能总结'}`
       }
     };
 
@@ -306,8 +362,12 @@ app.post('/api/submit', async (req, res) => {
   }
 
   // 计算分数
-  const score = calculateScore(examData.questions, answers);
-  const passed = score >= 80;
+  const { score, dimensions } = calculateScore(examData.questions, answers);
+  // 及格线调整为 70 分
+  const passed = score >= 70;
+
+  // 生成智能总结
+  const aiSummary = generateSmartSummary(score, dimensions);
 
   // 标记授权码为已使用
   markCodeAsUsed(examData.code);
@@ -319,6 +379,7 @@ app.post('/api/submit', async (req, res) => {
     position: examData.position,
     score,
     passed,
+    summary: aiSummary,
     duration: duration || 0,
     timestamp: new Date().toISOString(),
   };
@@ -342,6 +403,7 @@ app.post('/api/submit', async (req, res) => {
     success: true,
     message: '答卷已提交',
     score,
+    summary: aiSummary,
   });
 });
 
@@ -365,11 +427,14 @@ app.post('/api/test-submit', async (req, res) => {
   const { answers, duration = 2400 } = req.body;
 
   // 计算分数
-  const score = calculateScore(mockExamData.questions, answers || {
+  const { score, dimensions } = calculateScore(mockExamData.questions, answers || {
     1: 'B', 2: 'B', 3: 'C', 4: 'D', 5: ['A', 'B', 'D'],
     6: 'B', 7: 'B', 8: 'D', 9: ['A', 'B', 'C'], 10: 'B'
   });
-  const passed = score >= 80;
+  const passed = score >= 70;
+
+  // 生成智能总结
+  const aiSummary = generateSmartSummary(score, dimensions);
 
   // 准备推送数据
   const resultData = {
