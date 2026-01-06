@@ -82,34 +82,13 @@ const markCodeAsUsed = (code) => {
 /**
  * 随机抽取30道题（按10个维度均衡覆盖 + 岗位筛选）
  */
-const selectRandomQuestions = (count = 30, position) => {
-  const categories = {
-    'AI工具认知': [],
-    '岗位场景应用': [],
-    '思维转变识别': [],
-    '实战判断': [],
-    '多语言沟通': [],
-    '客户服务': [],
-    '数据分析': [],
-    '流程优化': [],
-    '风险控制': [],
-    '创新应用': [],
-  };
+const selectRandomQuestions = (userPosition) => {
+  // 1. 简单的岗位映射归一化
+  let targetPos = userPosition || '通用';
+  if (targetPos.includes('咨询')) targetPos = '咨询顾问';
+  else if (targetPos.includes('BD') || targetPos.includes('渠道')) targetPos = '渠道BD';
+  else if (targetPos.includes('KA') || targetPos.includes('大客户')) targetPos = '大客户经理';
 
-  // 按类别分组，同时过滤岗位相关题目
-  questions.forEach(q => {
-    if (categories[q.category] !== undefined) {
-      // 如果题目有岗位标签，只有匹配的岗位才能看到
-      if (q.positions && !q.positions.includes(position)) {
-        return; // 跳过不匹配的岗位题目
-      }
-      categories[q.category].push(q);
-    }
-  });
-
-  // 按比例抽取（均衡覆盖策略）
-  // AI工具认知:3, 岗位场景应用:4, 思维转变识别:2, 实战判断:3
-  // 多语言沟通:3, 客户服务:6, 数据分析:3, 流程优化:3, 风险控制:2, 创新应用:1
   const selected = [];
   const counts = {
     'AI工具认知': 3,
@@ -121,16 +100,25 @@ const selectRandomQuestions = (count = 30, position) => {
     '数据分析': 3,
     '流程优化': 3,
     '风险控制': 2,
-    '创新应用': 1
+    '创新应用': 1,
+    'AI前沿趋势': 1, // 新增的 2025 考点
+    '行业格局': 1    // 新增的 2025 考点
   };
 
-  Object.entries(counts).forEach(([cat, num]) => {
-    const catQuestions = categories[cat] || [];
-    const shuffled = catQuestions.sort(() => Math.random() - 0.5);
-    selected.push(...shuffled.slice(0, num));
+  Object.entries(counts).forEach(([category, count]) => {
+    // 筛选出属于该维度，且 (是通用题 OR 匹配当前岗位) 的题目
+    const pool = questions.filter(q =>
+      q.category === category &&
+      (!q.positions || q.positions.length === 0 || q.positions.includes(targetPos))
+    );
+
+    // 随机打乱
+    const shuffled = pool.sort(() => 0.5 - Math.random());
+
+    // 选取指定数量
+    selected.push(...shuffled.slice(0, count));
   });
 
-  // 再次随机打乱顺序
   return selected.sort(() => Math.random() - 0.5);
 };
 
@@ -307,7 +295,7 @@ app.post('/api/start', (req, res) => {
   const examId = uuidv4();
 
   // 随机选择题目
-  const selectedQuestions = selectRandomQuestions(30, position);
+  const selectedQuestions = selectRandomQuestions(position);
 
   // 保存考试信息
   exams.set(examId, {
