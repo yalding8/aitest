@@ -12,46 +12,47 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to Digital Ocean Droplet
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          # 关键修改：启用调试模式，这会打印出具体的连接错误原因
-          debug: true
-          # 增加超时时间
-          timeout: 30m
-          command_timeout: 30m
-          script: |
-            echo "🚀 开始连接服务器..."
-            # 停止脚本执行如果出现错误
+      - name: Setup SSH Key
+        run: |
+          # 创建 SSH 目录
+          mkdir -p ~/.ssh/
+          
+          # 将 Secret 里的私钥写入文件
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          
+          # 设置正确的权限（非常重要）
+          chmod 600 ~/.ssh/id_ed25519
+          
+          # 将服务器 IP 加入可信列表，避免首次连接询问
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Script
+        run: |
+          echo "🚀 开始连接服务器..."
+          
+          # 直接使用 ssh 命令执行远程脚本
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
             set -e
             
-            # 进入项目目录
+            # 1. 进入目录
             cd /root/aitest
             
-            # 强制重置代码，防止冲突
-            echo "📥 强制同步最新代码..."
+            # 2. 强制拉取最新代码
+            echo '📥 拉取代码...'
             git fetch --all
             git reset --hard origin/main
             
-            # 更新后端
-            echo "🔧 更新后端..."
+            # 3. 后端部署
+            echo '🔧 部署后端...'
             cd exam-backend
             npm install --production
-            
-            # 重启后端服务
-            echo "♻️ 重启后端服务..."
             pm2 restart aitest-backend || pm2 start server.js --name aitest-backend
             
-            # 更新前端
-            echo "🎨 构建前端..."
+            # 4. 前端部署
+            echo '🎨 部署前端...'
             cd ../exam-frontend
             npm install
             npm run build
             
-            # 检查状态
-            echo "✅ 部署完成！检查服务状态..."
-            pm2 status
+            echo '✅ 部署全部完成！'
+          "
