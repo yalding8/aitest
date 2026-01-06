@@ -1,325 +1,327 @@
-# AI 能力测试系统
+# AI应用及思考能力测试系统
 
-轻量级在线AI能力测试平台，用于评估咨询顾问、渠道BD、KA等非技术岗位候选人的AI应用能力。
+> 专为留学租房行业设计的AI能力评估系统
 
-## 📋 产品特性
+## 📋 项目简介
 
-- **30道题目** - 从60道题库中随机抽取
-- **4个维度** - AI工具认知、岗位场景应用、思维转变识别、实战判断
-- **多题型** - 单选、多选、案例分析
-- **60分钟限时** - 自动计时和提交
-- **授权码管理** - 50个独立授权码，防止重复作答
-- **Webhook推送** - 支持飞书/钉钉机器人实时推送结果
-- **无分数反馈** - 保护答题者隐私
+这是一个针对留学租房行业的AI应用能力测试系统，用于评估候选人在实际业务场景中使用AI工具的能力。系统包含100道精心设计的题目，覆盖10个业务维度，支持岗位差异化评估。
+
+## 🌟 核心特性
+
+### 1. 行业专属题库（100题）
+- ✅ 100%基于留学租房真实业务场景
+- ✅ 去除纯理论题目，强化实战应用
+- ✅ 10个维度全面覆盖业务能力
+
+### 2. 岗位差异化评估
+- **咨询顾问**：侧重客户服务、多语言沟通、紧急处理
+- **渠道BD**：侧重商务拓展、数据分析、资源整合
+- **大客户经理(KA)**：侧重大客户方案、风险控制、批量管理
+
+### 3. 智能抽题系统
+- 每次考试随机抽取30题
+- 10个维度均衡覆盖
+- 根据岗位自动过滤题目
+- 题目顺序随机打乱
+
+### 4. 完善的授权机制
+- 1000个一次性授权码（UHOMES001-998）
+- 1个永久超级码（UHOMES999）
+- 授权码使用后自动失效
+
+### 5. 企业微信通知
+- 考试结果自动推送到企业微信
+- 包含姓名、邮箱、岗位、分数、用时等信息
+- Markdown格式美观展示
+
+## 📊 题目分布
+
+### 按维度分类（100题）
+| 维度 | 题目数 | 说明 |
+|------|--------|------|
+| AI工具认知 | 8题 | 实用工具在行业中的应用 |
+| 岗位场景应用 | 10题 | 咨询/BD/KA实际业务场景 |
+| 思维转变识别 | 8题 | 从传统到AI思维的转变 |
+| 实战判断 | 6题 | 复杂场景的决策能力 |
+| 多语言沟通 | 8题 | 跨文化、跨语言服务 |
+| 客户服务 | 20题 | 投诉处理、紧急应对 |
+| 数据分析 | 12题 | 数据驱动决策能力 |
+| 流程优化 | 12题 | 效率提升与自动化 |
+| 风险控制 | 10题 | 合规意识与风险识别 |
+| 创新应用 | 6题 | 前沿AI应用探索 |
+
+### 抽题规则（每次30题）
+| 维度 | 抽取数量 | 占比 |
+|------|----------|------|
+| 客户服务 | 6题 | 20% |
+| 岗位场景应用 | 4题 | 13.3% |
+| AI工具认知 | 3题 | 10% |
+| 实战判断 | 3题 | 10% |
+| 多语言沟通 | 3题 | 10% |
+| 数据分析 | 3题 | 10% |
+| 流程优化 | 3题 | 10% |
+| 思维转变识别 | 2题 | 6.7% |
+| 风险控制 | 2题 | 6.7% |
+| 创新应用 | 1题 | 3.3% |
+
+### 岗位专属题目
+- **咨询顾问专属**：11题（客户服务、紧急处理）
+- **渠道BD专属**：2题（房东开发、商务拓展）
+- **大客户经理专属**：4题（大客户方案、风险控制）
+- **BD+KA共享**：6题（数据分析）
+- **通用题目**：77题（所有岗位）
 
 ## 🏗️ 技术架构
 
 ### 前端
-- React 18 + TypeScript
-- Tailwind CSS（Apple风格）
-- Vite 构建工具
-- React Router 路由
+- **框架**：React 18 + Vite
+- **路由**：React Router v6
+- **样式**：Tailwind CSS
+- **HTTP客户端**：Axios
+- **构建工具**：Vite
 
 ### 后端
-- Node.js + Express
-- 轻量级无数据库设计
-- JSON 数据文件（易于维护）
-- Webhook 推送集成
+- **运行时**：Node.js (ES Modules)
+- **框架**：Express.js
+- **进程管理**：PM2
+- **数据存储**：JSON文件
 
-### 数据存储
-- `题库.json` - 60道题目
-- `授权码.json` - 50个授权码管理
+### 部署
+- **服务器**：Digital Ocean
+- **Web服务器**：Nginx
+- **域名/IP**：188.166.250.114
+- **端口**：8080
 
 ## 🚀 快速开始
 
-### 前置要求
-- Node.js 16+
-- npm 或 pnpm
-
 ### 本地开发
 
-#### 1. 后端启动
+#### 1. 克隆项目
+```bash
+git clone https://github.com/yalding8/aitest.git
+cd aitest
+```
 
+#### 2. 安装依赖
+
+**后端**：
 ```bash
 cd exam-backend
 npm install
-cp .env.example .env
-# 编辑 .env 配置 WEBHOOK_URL（可选）
-npm run dev
 ```
 
-后端运行在 `http://localhost:3001`
-
-#### 2. 前端启动
-
+**前端**：
 ```bash
 cd exam-frontend
 npm install
+```
+
+#### 3. 配置环境变量
+
+**后端** (`exam-backend/.env`)：
+```env
+PORT=3005
+NODE_ENV=development
+WEBHOOK_URL=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY
+```
+
+**前端** (`exam-frontend/.env.development`)：
+```env
+VITE_API_URL=http://localhost:3005/api
+```
+
+#### 4. 启动服务
+
+**后端**：
+```bash
+cd exam-backend
+npm start
+```
+
+**前端**：
+```bash
+cd exam-frontend
 npm run dev
 ```
 
-前端运行在 `http://localhost:5173`
+访问：`http://localhost:5173`
 
-#### 3. 访问应用
+### 生产部署
 
-打开浏览器访问 `http://localhost:5173`
+详见 [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-## 📝 使用授权码
-
-初始50个授权码在 `授权码.json` 中：
+## 📁 项目结构
 
 ```
-EXAM2601A1 - EXAM2601A5
-EXAM2601B1 - EXAM2601B5
-... 以此类推
-EXAM2601K1 - EXAM2601K5
+aitest/
+├── exam-backend/          # 后端服务
+│   ├── server.js         # Express服务器
+│   └── package.json
+├── exam-frontend/         # 前端应用
+│   ├── src/
+│   │   ├── pages/        # 页面组件
+│   │   ├── api/          # API客户端
+│   │   └── App.tsx       # 根组件
+│   ├── vite.config.ts    # Vite配置
+│   └── package.json
+├── 题库.json             # 题库数据（100题）
+├── 授权码.json           # 授权码数据（1000个）
+├── deploy.sh             # 部署脚本
+└── README.md             # 项目文档
 ```
 
-每个授权码只能使用一次，使用后自动标记为 `used`。
+## 🔑 授权码管理
 
-## 🔧 配置说明
+### 授权码格式
+- **普通码**：`UHOMES001` - `UHOMES998`（一次性使用）
+- **超级码**：`UHOMES999`（永久可用，用于测试）
 
-### 后端 `.env` 配置
-
-```env
-# 服务器端口
-PORT=3001
-
-# Webhook URL（飞书/钉钉机器人）
-WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx
-
-# SMTP 邮件配置（可选）
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-```
-
-### 前端 `.env` 配置
-
-```env
-VITE_API_URL=http://localhost:3001/api
-```
-
-## 📊 API 接口
-
-### POST /api/verify
-验证授权码有效性
-
-```json
-请求:
-{
-  "code": "EXAM2601A1"
-}
-
-响应:
-{
-  "success": true,
-  "message": "授权码验证成功"
-}
-```
-
-### POST /api/start
-启动考试，返回随机30道题
-
-```json
-请求:
-{
-  "code": "EXAM2601A1",
-  "name": "张三",
-  "email": "zhangsan@example.com",
-  "position": "咨询顾问"
-}
-
-响应:
-{
-  "success": true,
-  "examId": "uuid-xxx",
-  "questions": [...],
-  "duration": 60
-}
-```
-
-### POST /api/submit
-提交答卷，计分并推送结果
-
-```json
-请求:
-{
-  "examId": "uuid-xxx",
-  "answers": {
-    1: "A",
-    2: ["B", "C"],
-    3: "D"
-  },
-  "duration": 2400
-}
-
-响应:
-{
-  "success": true,
-  "message": "答卷已提交",
-  "score": 85
-}
-```
-
-## 📤 Webhook 推送格式
-
-### 飞书机器人
-
+### 授权码状态
 ```json
 {
-  "msg_type": "interactive",
-  "card": {
-    "elements": [
-      {
-        "tag": "div",
-        "text": {
-          "content": "**AI 能力测试结果**\n\n...",
-          "tag": "lark_md"
-        }
-      }
-    ]
-  }
+  "code": "UHOMES001",
+  "status": "unused",      // unused | used
+  "usedAt": null,          // 使用时间
+  "usedBy": null           // 使用者邮箱
 }
 ```
 
-推送内容包括：
-- 姓名
-- 邮箱
-- 岗位
-- 分数（0-100）
-- 及格状态（≥80分为及格）
-- 答题用时（秒）
+### 生成新授权码
+```bash
+# 生成1000个授权码
+python3 generate_codes.py
+```
 
-## 🎯 题库结构
+## 📝 题库管理
 
+### 题目格式
 ```json
 {
   "id": 1,
-  "type": "single",  // single | multiple | case
-  "category": "AI工具认知",
-  "question": "题干文本",
-  "options": ["A选项", "B选项", "C选项", "D选项"],
-  "answer": "A",  // 单选：字符串，多选：数组
-  "score": 3
+  "type": "single",                    // single | multiple | case
+  "category": "客户服务",
+  "question": "题目内容",
+  "options": ["选项A", "选项B", "选项C", "选项D"],
+  "answer": "B",                       // 单选：A/B/C/D，多选：["A", "B"]
+  "score": 4,
+  "positions": ["咨询顾问"]            // 可选，岗位标签
 }
 ```
 
-## 🎨 UI 设计
+### 添加新题目
+1. 编辑 `题库.json`
+2. 按照上述格式添加题目
+3. 确保JSON格式正确
+4. 重启后端服务
 
-采用 Apple.com 风格的简洁、克制、高质感设计：
-- 最小化干扰
-- 清晰的信息层级
-- 响应式布局
-- 支持手机答题
+## 🎯 评分规则
 
-## 🛠️ 部署指南
+- **总分**：100分
+- **及格线**：80分
+- **计分方式**：
+  - 单选题：答对得分，答错不得分
+  - 多选题：完全正确得分，部分正确或错误不得分
+  - 案例题：同单选题
 
-### Vercel（推荐）
+## 📊 考试流程
 
-#### 前端部署
+1. **输入授权码**：候选人输入授权码、姓名、邮箱、岗位
+2. **验证授权**：系统验证授权码有效性
+3. **开始考试**：系统根据岗位抽取30题
+4. **答题**：60分钟限时答题
+5. **提交答卷**：系统自动计分
+6. **推送结果**：结果推送到企业微信
+7. **显示完成**：候选人看到完成页面（不显示分数）
 
-```bash
-cd exam-frontend
-npm run build
-# 连接到 Vercel 并部署
-```
+## 🔧 配置说明
 
-环境变量：
-```
-VITE_API_URL=https://your-api-domain.com/api
-```
+### Nginx配置
+```nginx
+server {
+    listen 8080;
+    server_name 188.166.250.114;
+    
+    location / {
+        root /var/www/aitest;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
 
-#### 后端部署
-
-可直接部署到 Vercel Serverless，或使用其他 Node.js 服务：
-- Railway
-- Render
-- Heroku
-
-### Docker 部署
-
-```dockerfile
-# 后端 Dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY exam-backend ./
-RUN npm install
-CMD ["npm", "start"]
-```
-
-## 🔐 安全考虑
-
-1. **授权码管理**
-   - 每个候选人一个独立授权码
-   - 授权码一次性使用
-   - 建议定期生成新授权码
-
-2. **数据隐私**
-   - 考试过程中不显示分数
-   - 结果通过 Webhook 推送，无本地存储
-   - 支持 HTTPS 部署
-
-3. **防作弊机制**
-   - 实时倒计时
-   - 一次性授权码
-   - IP 限制可选
-
-## 📈 扩展计划
-
-- [ ] 支持题库版本管理
-- [ ] 添加后台管理界面
-- [ ] 支持批量生成授权码
-- [ ] 成绩统计和分析
-- [ ] 邮件反馈通知
-- [ ] 多语言支持
-
-## 💡 学习机会
-
-这个项目展示了完整的全栈开发流程：
-
-1. **前端**：React Hooks、状态管理、路由、响应式设计
-2. **后端**：Express API、数据处理、Webhook 集成
-3. **工程化**：Vite、TypeScript、环境配置、部署
-4. **产品思维**：用户体验、数据流、系统设计
-
-## 🤝 维护和更新
-
-### 定期更新题库
-
-1. 在 `题库.json` 中添加新题目
-2. 保持4个维度的平衡
-3. 定期审核题目难度和相关性
-4. 更新频率：每季度一次
-
-### 生成新授权码
-
-```bash
-# 在 node 中执行
-const codes = [];
-for (let i = 0; i < 50; i++) {
-  codes.push({
-    code: `EXAM${Date.now().toString().slice(-4)}${String.fromCharCode(65 + Math.floor(i / 5))}${(i % 5) + 1}`,
-    status: 'unused',
-    usedAt: null,
-    usedBy: null
-  });
+    location /aitest/api/ {
+        proxy_pass http://localhost:3005/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
 }
-console.log(JSON.stringify(codes, null, 2));
 ```
 
-## 📞 技术支持
+### PM2配置
+```bash
+# 启动后端
+pm2 start exam-backend/server.js --name aitest-backend
 
-- 问题排查：查看服务器日志和浏览器控制台
-- Webhook 推送失败：检查 URL 和网络连接
-- 授权码问题：检查 `授权码.json` 文件
+# 查看日志
+pm2 logs aitest-backend
 
-## 📄 许可
+# 重启服务
+pm2 restart aitest-backend
+```
 
-MIT License
+## 📱 移动端优化
+
+- ✅ 响应式设计，支持手机/平板
+- ✅ 移动端键盘优化
+- ✅ 触摸友好的UI
+- ✅ 自动保存答题进度
+
+## 🔐 安全特性
+
+- ✅ 授权码一次性使用
+- ✅ 考试时间限制
+- ✅ 防止刷新丢失进度
+- ✅ 敏感数据加密传输
+- ✅ CORS跨域保护
+
+## 📈 数据统计
+
+系统自动记录：
+- 考试结果（姓名、邮箱、岗位、分数、用时）
+- 授权码使用情况
+- 考试完成率
+
+## 🤝 贡献指南
+
+1. Fork本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启Pull Request
+
+## 📄 许可证
+
+本项目仅供内部使用。
+
+## 📞 联系方式
+
+- **项目地址**：https://github.com/yalding8/aitest
+- **在线访问**：http://188.166.250.114:8080/aitest/
+
+## 🎉 更新日志
+
+### v2.0.0 (2026-01-06)
+- ✨ 题库扩充到100题
+- ✨ 新增岗位差异化评估
+- ✨ 10个维度全面覆盖
+- ✨ 优化抽题算法
+- 🐛 修复移动端输入问题
+- 🐛 修复返回首页功能
+
+### v1.0.0 (2026-01-05)
+- 🎉 初始版本发布
+- ✨ 40题行业化题库
+- ✨ 授权码系统
+- ✨ 企业微信通知
 
 ---
 
-**开发时间**: 约 6-8 小时（完整实现包括部署）
-**维护周期**: 低维护，主要是题库更新
+**Made with ❤️ for UHOMES**
