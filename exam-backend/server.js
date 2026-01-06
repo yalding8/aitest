@@ -80,7 +80,7 @@ const markCodeAsUsed = (code) => {
 };
 
 /**
- * 随机抽取30道题（按维度均匀分布 + 岗位筛选）
+ * 随机抽取30道题（按10个维度均衡覆盖 + 岗位筛选）
  */
 const selectRandomQuestions = (count = 30, position) => {
   const categories = {
@@ -88,11 +88,17 @@ const selectRandomQuestions = (count = 30, position) => {
     '岗位场景应用': [],
     '思维转变识别': [],
     '实战判断': [],
+    '多语言沟通': [],
+    '客户服务': [],
+    '数据分析': [],
+    '流程优化': [],
+    '风险控制': [],
+    '创新应用': [],
   };
 
   // 按类别分组，同时过滤岗位相关题目
   questions.forEach(q => {
-    if (categories[q.category]) {
+    if (categories[q.category] !== undefined) {
       // 如果题目有岗位标签，只有匹配的岗位才能看到
       if (q.positions && !q.positions.includes(position)) {
         return; // 跳过不匹配的岗位题目
@@ -101,9 +107,22 @@ const selectRandomQuestions = (count = 30, position) => {
     }
   });
 
-  // 按比例抽取（8、10、7、5）
+  // 按比例抽取（均衡覆盖策略）
+  // AI工具认知:3, 岗位场景应用:4, 思维转变识别:2, 实战判断:3
+  // 多语言沟通:3, 客户服务:6, 数据分析:3, 流程优化:3, 风险控制:2, 创新应用:1
   const selected = [];
-  const counts = { 'AI工具认知': 8, '岗位场景应用': 10, '思维转变识别': 7, '实战判断': 5 };
+  const counts = {
+    'AI工具认知': 3,
+    '岗位场景应用': 4,
+    '思维转变识别': 2,
+    '实战判断': 3,
+    '多语言沟通': 3,
+    '客户服务': 6,
+    '数据分析': 3,
+    '流程优化': 3,
+    '风险控制': 2,
+    '创新应用': 1
+  };
 
   Object.entries(counts).forEach(([cat, num]) => {
     const catQuestions = categories[cat] || [];
