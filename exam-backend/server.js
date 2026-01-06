@@ -68,6 +68,11 @@ const verifyAuthCode = (code) => {
 const markCodeAsUsed = (code) => {
   const authCode = authCodes.find(c => c.code === code.toUpperCase());
   if (authCode) {
+    // UHOMES999 永不失效，仅记录日志不标记为 used
+    if (authCode.code === 'UHOMES999') {
+      console.log('UHOMES999 used, keeping status as unused');
+      return;
+    }
     authCode.status = 'used';
     authCode.usedAt = new Date().toISOString();
     saveAuthCodes();
@@ -124,7 +129,7 @@ const calculateScore = (questions, answers) => {
     const isCorrect =
       q.type === 'multiple'
         ? Array.isArray(userAnswer) &&
-          userAnswer.sort().join(',') === q.answer.sort().join(',')
+        userAnswer.sort().join(',') === q.answer.sort().join(',')
         : userAnswer === q.answer;
 
     if (isCorrect) {
@@ -145,7 +150,7 @@ const pushToWebhook = async (examData) => {
   try {
     console.log('Pushing to webhook:', process.env.WEBHOOK_URL);
     console.log('Exam data:', examData);
-    
+
     // 企业微信机器人格式
     const payload = {
       msgtype: 'markdown',
@@ -161,7 +166,7 @@ const pushToWebhook = async (examData) => {
         'Content-Type': 'application/json'
       }
     });
-    
+
     console.log('Webhook response:', response.status, response.data);
     console.log('Webhook pushed successfully');
   } catch (err) {
@@ -378,7 +383,7 @@ app.post('/api/test-submit', async (req, res) => {
 
 // Root route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'AI Exam Backend API',
     version: '1.0.0',
     endpoints: {
@@ -426,7 +431,7 @@ app.post('/api/test-webhook', async (req, res) => {
   };
 
   await pushToWebhook(testData);
-  
+
   res.json({
     success: true,
     message: '测试Webhook已发送',

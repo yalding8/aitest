@@ -71,7 +71,10 @@ export default function CompletePage() {
             本测试不显示分数，结果已通过安全渠道提交。
           </p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              sessionStorage.clear();
+              window.location.href = '/';
+            }}
             className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
           >
             返回首页

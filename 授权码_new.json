@@ -1,0 +1,14 @@
+{
+  "codes": [
+    { "code": "UHOMES001", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES002", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES003", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES004", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES005", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES006", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES007", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES008", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES009", "status": "unused", "usedAt": null, "usedBy": null },
+    { "code": "UHOMES010", "status": "unused", "usedAt": null, "usedBy": null }
+  ]
+}
