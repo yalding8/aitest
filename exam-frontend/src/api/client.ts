@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 // 在生产环境使用相对路径，开发环境使用 localhost
-const API_BASE_URL = import.meta.env.VITE_API_URL ||
-  (import.meta.env.MODE === 'production' ? '/api' : 'http://localhost:3005/api');
+const isProduction = import.meta.env.MODE === 'production';
+// 如果是生产环境，强制使用 /api。否则优先使用 VITE_API_URL，最后回退到 localhost:3005
+const API_BASE_URL = isProduction ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3005/api');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
