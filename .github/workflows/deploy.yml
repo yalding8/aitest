@@ -43,6 +43,12 @@ jobs:
             npm install
             npm run build
             
+            # 关键修复：将构建产物复制到 Nginx 目录
+            echo '🚚 部署前端文件到 Nginx...'
+            mkdir -p /var/www/aitest
+            rm -rf /var/www/aitest/*
+            cp -r dist/* /var/www/aitest/
+            
             echo '✅ 部署成功！'
             pm2 status
           "
