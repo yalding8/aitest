@@ -45,7 +45,7 @@ export default function CompletePage() {
             感谢你的参与，我们已收到你的答题结果。
           </p>
           <p className="text-base text-gray-500">
-            HR 团队将在审阅后与你联系，祝你好运！
+            本测试仅用于内部的能力调研与分析，感谢配合。
           </p>
         </div>
 
@@ -56,12 +56,8 @@ export default function CompletePage() {
             <span className="text-sm text-gray-900">30 道</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-gray-700">及格线</span>
-            <span className="text-sm text-gray-900">80 分</span>
-          </div>
-          <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-gray-700">评估维度</span>
-            <span className="text-sm text-gray-900">AI 能力 & 思维</span>
+            <span className="text-sm text-gray-900">AI工具认知 | 场景应用 | 创新思维</span>
           </div>
         </div>
 
