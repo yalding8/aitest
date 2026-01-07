@@ -47,8 +47,40 @@ const saveAuthCodes = () => {
 loadData();
 
 // In-memory exam storage (考试数据存储)
-const exams = new Map();
+// In-memory exam storage (考试数据存储)
+let exams = new Map();
 const examResults = []; // 存储考试结果
+
+// 持久化考试会话路径
+const examsPersistencePath = path.join(__dirname, '../exams_session.json');
+
+// 加载持久化的考试会话
+const loadExamsSession = () => {
+  try {
+    if (fs.existsSync(examsPersistencePath)) {
+      const data = fs.readFileSync(examsPersistencePath, 'utf-8');
+      const parsed = JSON.parse(data);
+      // 将普通对象转换为 Map
+      exams = new Map(Object.entries(parsed));
+      console.log(`Restore ${exams.size} exam sessions from disk.`);
+    }
+  } catch (err) {
+    console.error('Error loading exams session:', err);
+  }
+};
+
+// 保存考试会话到磁盘
+const saveExamsSession = () => {
+  try {
+    // 将 Map 转换为普通对象进行序列化
+    const data = Object.fromEntries(exams);
+    fs.writeFileSync(examsPersistencePath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Error saving exams session:', err);
+  }
+};
+
+loadExamsSession();
 
 // ==================== Helper Functions ====================
 
@@ -308,6 +340,7 @@ app.post('/api/start', (req, res) => {
     startTime: Date.now(),
     status: 'in_progress',
   });
+  saveExamsSession(); // 保存会话
 
   // 返回题目（不包含答案）
   const questionsForClient = selectedQuestions.map(q => ({
@@ -386,6 +419,7 @@ app.post('/api/submit', async (req, res) => {
   examData.status = 'completed';
   examData.score = score;
   exams.delete(examId);
+  saveExamsSession(); // 保存会话
 
   res.json({
     success: true,
