@@ -82,6 +82,36 @@ const saveExamsSession = () => {
 
 loadExamsSession();
 
+// 持久化考试结果路径
+const resultsPersistencePath = path.join(__dirname, '../exam_results.json');
+
+// 加载持久化的考试结果
+const loadExamResults = () => {
+  try {
+    if (fs.existsSync(resultsPersistencePath)) {
+      const data = fs.readFileSync(resultsPersistencePath, 'utf-8');
+      const loadedResults = JSON.parse(data);
+      if (Array.isArray(loadedResults)) {
+        examResults.push(...loadedResults);
+        console.log(`Restore ${examResults.length} exam results from disk.`);
+      }
+    }
+  } catch (err) {
+    console.error('Error loading exam results:', err);
+  }
+};
+
+// 保存考试结果到磁盘
+const saveExamResults = () => {
+  try {
+    fs.writeFileSync(resultsPersistencePath, JSON.stringify(examResults, null, 2));
+  } catch (err) {
+    console.error('Error saving exam results:', err);
+  }
+};
+
+loadExamResults();
+
 // ==================== Helper Functions ====================
 
 /**
@@ -414,6 +444,7 @@ app.post('/api/submit', async (req, res) => {
     examId,
     submittedAt: new Date().toISOString()
   });
+  saveExamResults(); // 保存结果到磁盘
 
   // 清理考试数据
   examData.status = 'completed';
@@ -478,6 +509,7 @@ app.post('/api/test-submit', async (req, res) => {
     examId: mockExamData.examId,
     submittedAt: new Date().toISOString()
   });
+  saveExamResults(); // 保存结果到磁盘
 
   res.json({
     success: true,
