@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// 在生产环境使用相对路径，开发环境使用 localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.MODE === 'production' ? '/api' : 'http://localhost:3005/api');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
