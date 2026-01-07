@@ -534,27 +534,7 @@ app.get('/', (req, res) => {
   });
 });
 
-/**
- * GET /api/results
- * 查看所有考试结果（管理员使用）
- */
-app.get('/api/results', (req, res) => {
-  const results = examResults.map(result => ({
-    name: result.name,
-    email: result.email,
-    position: result.position,
-    score: result.score,
-    passed: result.passed,
-    duration: result.duration,
-    submittedAt: result.submittedAt
-  }));
-
-  res.json({
-    success: true,
-    total: results.length,
-    results: results.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
-  });
-});
+// Endpoint removed for security
 
 // Test webhook
 app.post('/api/test-webhook', async (req, res) => {
