@@ -111,6 +111,7 @@
    ```bash
    ssh root@188.166.250.114 'pm2 logs aitest-backend --lines 50 --nostream'
    ```
+- **在线演示**: [https://test.pylosy.com/](https://test.pylosy.com/)
 
 ## 🚀 快速开始
 

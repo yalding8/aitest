@@ -127,16 +127,25 @@ const verifyAuthCode = (code) => {
 /**
  * 标记授权码为已使用
  */
-const markCodeAsUsed = (code) => {
+const markCodeAsUsed = (code, userInfo) => {
   const authCode = authCodes.find(c => c.code === code.toUpperCase());
   if (authCode) {
     // UHOMES999 永不失效，仅记录日志不标记为 used
     if (authCode.code === 'UHOMES999') {
-      console.log('UHOMES999 used, keeping status as unused');
+      console.log('UHOMES999 used by', userInfo?.name, 'keeping status as unused');
       return;
     }
     authCode.status = 'used';
     authCode.usedAt = new Date().toISOString();
+    // 记录使用者信息
+    if (userInfo) {
+      authCode.usedBy = {
+        name: userInfo.name,
+        email: userInfo.email,
+        position: userInfo.position,
+        score: userInfo.score
+      };
+    }
     saveAuthCodes();
   }
 };
@@ -421,7 +430,13 @@ app.post('/api/submit', async (req, res) => {
   const aiSummary = generateSmartSummary(score, dimensions);
 
   // 标记授权码为已使用
-  markCodeAsUsed(examData.code);
+  // 标记授权码为已使用
+  markCodeAsUsed(examData.code, {
+    name: examData.name,
+    email: examData.email,
+    position: examData.position,
+    score: score
+  });
 
   // 准备推送数据
   const resultData = {

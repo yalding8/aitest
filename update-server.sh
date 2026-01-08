@@ -54,5 +54,5 @@ echo "🎉 服务器更新完成！"
 ENDSSH
 
 echo "✅ 部署完成！"
-echo "🌐 访问地址: http://188.166.250.114:8080/aitest/"
+echo "🌐 访问地址: https://test.pylosy.com/"
 echo "📊 查看日志: ssh $SERVER 'pm2 logs aitest-backend'"

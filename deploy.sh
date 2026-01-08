@@ -74,8 +74,8 @@ sudo ufw allow 443
 sudo ufw --force enable
 
 echo "✅ 部署完成！"
-echo "🌐 访问地址: http://188.166.250.114"
-echo "📊 结果页面: http://188.166.250.114/api/results"
+echo "🌐 访问地址: https://test.pylosy.com"
+echo "📊 结果页面: https://test.pylosy.com/api/results"
 echo "🔧 管理命令:"
 echo "  pm2 status"
 echo "  pm2 logs aitest-backend"

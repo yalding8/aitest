@@ -77,13 +77,13 @@ ssh root@188.166.250.114 "pm2 logs aitest-backend --lines 20"
 
 ### 3. 测试API接口
 ```bash
-curl http://188.166.250.114:8080/aitest/api/
+curl https://test.pylosy.com/api/
 ```
 
 应该返回API信息
 
 ### 4. 访问前端页面
-浏览器打开: http://188.166.250.114:8080/aitest/
+浏览器打开: https://test.pylosy.com/
 
 ## 常见问题
 
@@ -125,7 +125,7 @@ git reset --hard origin/main
 ## 当前配置信息
 
 - **服务器IP**: 188.166.250.114
-- **访问地址**: http://188.166.250.114:8080/aitest/
+- **访问地址**: https://test.pylosy.com/
 - **后端端口**: 3005
 - **前端路径**: /var/www/aitest
 - **后端路径**: /root/aitest/exam-backend
