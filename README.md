@@ -353,3 +353,5 @@ pm2 restart aitest-backend
 ---
 
 **Made with ❤️ for UHOMES**
+
+<!-- Auto-deploy test: 2026-01-08 -->
