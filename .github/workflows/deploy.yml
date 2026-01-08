@@ -1,54 +1,62 @@
-name: Deploy to Server
+name: Deploy and Sync
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-server:
+    name: 🚀 Deploy to Server
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy
-        run: |
-          echo "🚀 开始部署..."
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "
-            set -e
-            
-            # 1. 更新代码
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
             cd /root/aitest
-            echo '📥 拉取最新代码...'
-            git fetch --all
-            git reset --hard origin/main
+            git pull origin main
             
-            # 2. 后端部署
-            echo '🔧 后端构建中...'
             cd exam-backend
             npm install --production
             pm2 restart aitest-backend || pm2 start server.js --name aitest-backend
             
-            # 3. 前端部署
-            echo '🎨 前端构建中...'
             cd ../exam-frontend
             npm install
             npm run build
             
-            # 关键修复：将构建产物复制到 Nginx 目录
-            echo '🚚 部署前端文件到 Nginx...'
-            mkdir -p /var/www/aitest
-            rm -rf /var/www/aitest/*
-            cp -r dist/* /var/www/aitest/
-            
-            echo '✅ 部署成功！'
-            pm2 status
-          "
+            echo "✅ Server Deployment Complete"
+
+  sync-gitlab:
+    name: 🔄 Sync to GitLab
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Push to GitLab
+        env:
+          # 格式: https://gitlab.com/username/repo.git (不带 https://)
+          GITLAB_REPO: ${{ secrets.GITLAB_REPO }} 
+          # GitLab Personal Access Token
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          if [ -z "$GITLAB_REPO" ] || [ -z "$GITLAB_TOKEN" ]; then
+            echo "⚠️ GitLab secrets not configured, skipping sync."
+            exit 0
+          fi
+          
+          echo "Pushing to GitLab..."
+          # 构造带认证的 URL: https://oauth2:TOKEN@gitlab.com/user/repo.git
+          REMOTE_URL="https://oauth2:${GITLAB_TOKEN}@${GITLAB_REPO}"
+          
+          git remote add gitlab "$REMOTE_URL"
+          git push -u gitlab main --force
+          echo "✅ Synced to GitLab successfully"
