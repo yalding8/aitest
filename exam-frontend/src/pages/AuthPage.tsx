@@ -177,6 +177,15 @@ export default function AuthPage() {
           </button>
         </form>
 
+        <div className="text-center mt-6">
+          <button
+            onClick={() => navigate('/guide')}
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+          >
+            📖 查看考生操作指南
+          </button>
+        </div>
+
         <div className="text-center text-sm text-gray-600 space-y-2">
           <p>✓ 30 道题目</p>
           <p>✓ 60 分钟限时</p>
