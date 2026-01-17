@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI能力测试结果</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f7;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #1d1d1f;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #f6f6f6;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007aff;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        th {
+            background-color: #f6f6f6;
+            font-weight: 600;
+        }
+        .score {
+            font-weight: bold;
+        }
+        .passed {
+            color: #34c759;
+        }
+        .failed {
+            color: #ff3b30;
+        }
+        .refresh-btn {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        .refresh-btn:hover {
+            background: #0056cc;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI应用及思考能力测试结果统计</h1>
+        
+        <button class="refresh-btn" onclick="loadResults()">刷新数据</button>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCount">-</div>
+                <div class="stat-label">总参与人数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="passedCount">-</div>
+                <div class="stat-label">及格人数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="passRate">-</div>
+                <div class="stat-label">及格率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgScore">-</div>
+                <div class="stat-label">平均分</div>
+            </div>
+        </div>
+
+        <div id="results">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadResults() {
+            try {
+                const response = await fetch('http://localhost:3001/api/results');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayStats(data.results);
+                    displayResults(data.results);
+                } else {
+                    document.getElementById('results').innerHTML = '<div class="loading">加载失败</div>';
+                }
+            } catch (error) {
+                console.error('Error loading results:', error);
+                document.getElementById('results').innerHTML = '<div class="loading">连接失败，请确保后端服务正在运行</div>';
+            }
+        }
+
+        function displayStats(results) {
+            const total = results.length;
+            const passed = results.filter(r => r.passed).length;
+            const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+            const avgScore = total > 0 ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / total) : 0;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('passedCount').textContent = passed;
+            document.getElementById('passRate').textContent = passRate + '%';
+            document.getElementById('avgScore').textContent = avgScore;
+        }
+
+        function displayResults(results) {
+            if (results.length === 0) {
+                document.getElementById('results').innerHTML = '<div class="loading">暂无考试结果</div>';
+                return;
+            }
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>姓名</th>
+                            <th>邮箱</th>
+                            <th>岗位</th>
+                            <th>分数</th>
+                            <th>状态</th>
+                            <th>用时(分钟)</th>
+                            <th>提交时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${results.map(result => `
+                            <tr>
+                                <td>${result.name}</td>
+                                <td>${result.email}</td>
+                                <td>${result.position}</td>
+                                <td class="score">${result.score}</td>
+                                <td class="${result.passed ? 'passed' : 'failed'}">
+                                    ${result.passed ? '✅ 及格' : '❌ 不及格'}
+                                </td>
+                                <td>${Math.round(result.duration / 60)}</td>
+                                <td>${new Date(result.submittedAt).toLocaleString('zh-CN')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('results').innerHTML = table;
+        }
+
+        // 页面加载时自动获取数据
+        loadResults();
+        
+        // 每30秒自动刷新一次
+        setInterval(loadResults, 30000);
+    </script>
+</body>
+</html>

@@ -216,16 +216,37 @@ const calculateScore = (questions, answers) => {
     const userAnswer = answers[q.id];
     if (!userAnswer) return;
 
-    const isCorrect =
-      q.type === 'multiple'
-        ? Array.isArray(userAnswer) &&
-        userAnswer.sort().join(',') === q.answer.sort().join(',')
-        : userAnswer === q.answer;
+    let qScore = 0;
 
-    if (isCorrect) {
-      earnedScore += q.score;
-      dimensionStats[q.category].earned += q.score;
+    if (q.type === 'multiple') {
+      if (Array.isArray(userAnswer)) {
+        const correctOptions = q.answer;
+        // 检查是否有错选（选了不在正确答案里的选项）
+        const hasWrongOption = userAnswer.some(opt => !correctOptions.includes(opt));
+
+        if (hasWrongOption) {
+          qScore = 0; // 错选不得分
+        } else {
+          // 没有错选，检查选了多少个
+          const correctCount = userAnswer.length;
+          const totalCorrect = correctOptions.length;
+
+          if (correctCount === totalCorrect) {
+            qScore = q.score; // 全对满分
+          } else if (correctCount > 0) {
+            qScore = q.score / 2; // 少选得一半分
+          }
+        }
+      }
+    } else {
+      // 单选或判断题
+      if (userAnswer === q.answer) {
+        qScore = q.score;
+      }
     }
+
+    earnedScore += qScore;
+    dimensionStats[q.category].earned += qScore;
   });
 
   // 计算最终得分 (标准化到 100 分)
