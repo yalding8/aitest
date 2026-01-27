@@ -26,6 +26,7 @@ export interface StartExamRequest {
   name: string;
   email: string;
   position: string;
+  examType?: 'staff' | 'management';
 }
 
 export interface Question {

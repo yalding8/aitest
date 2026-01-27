@@ -24,29 +24,39 @@ export default function ExamPage() {
 
   // 从 sessionStorage 加载考试数据
   useEffect(() => {
-    const loadExamData = async () => {
+    const loadExamData = () => {
       if (!examId || !examCode) {
         navigate('/');
         return;
       }
 
       try {
-        // 获取题库
-        const questionsData = await fetch('/题库.json').then(r => r.json());
+        // 从 sessionStorage 获取由服务器选定的题目
+        const savedQuestions = sessionStorage.getItem('examQuestions');
+        if (!savedQuestions) {
+          throw new Error('No questions found in session');
+        }
 
-        // 随机抽取 30 道题
-        const shuffled = questionsData.questions
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 30);
+        const questions = JSON.parse(savedQuestions);
+
+        // 恢复之前的进度
+        const savedAnswers = localStorage.getItem(`exam_${examId}`);
+        const parsedAnswers = savedAnswers ? JSON.parse(savedAnswers) : {};
 
         setExam(prev => ({
           ...prev,
-          questions: shuffled,
-          answers: {},
+          questions: questions,
+          answers: parsedAnswers,
         }));
+
+        // 恢复时间
+        const startTime = parseInt(sessionStorage.getItem('examStartTime') || Date.now().toString());
+        const totalDuration = parseInt(sessionStorage.getItem('examDuration') || '60') * 60;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        setTimeLeft(Math.max(0, totalDuration - elapsed));
+
       } catch (err) {
-        console.error('Failed to load questions:', err);
-        // 如果加载失败，导航回首页
+        console.error('Failed to load exam context:', err);
         navigate('/');
       } finally {
         setLoading(false);
@@ -118,6 +128,9 @@ export default function ExamPage() {
       sessionStorage.removeItem('examId');
       sessionStorage.removeItem('examCode');
       sessionStorage.removeItem('examStartTime');
+      sessionStorage.removeItem('examQuestions'); // Clear questions from session storage
+      sessionStorage.removeItem('examDuration'); // Clear duration from session storage
+      sessionStorage.removeItem('examType'); // Clear examType from session storage
 
       navigate('/complete');
     } catch (err) {
@@ -141,7 +154,7 @@ export default function ExamPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <p className="text-lg text-red-600 mb-4">加载题目失败</p>
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
@@ -279,11 +292,10 @@ export default function ExamPage() {
                   return (
                     <label
                       key={idx}
-                      className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all ${
-                        isSelected
+                      className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all ${isSelected
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 bg-white hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <input
                         type={currentQuestion.type === 'multiple' ? 'checkbox' : 'radio'}
@@ -351,13 +363,12 @@ export default function ExamPage() {
                   <button
                     key={idx}
                     onClick={() => handleJumpToQuestion(idx)}
-                    className={`h-8 w-8 text-xs rounded font-medium transition-colors ${
-                      idx === exam.currentQuestionIndex
+                    className={`h-8 w-8 text-xs rounded font-medium transition-colors ${idx === exam.currentQuestionIndex
                         ? 'bg-blue-600 text-white'
                         : exam.answers[q.id]
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
                     title={`第 ${idx + 1} 题`}
                   >
                     {idx + 1}

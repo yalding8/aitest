@@ -22,15 +22,23 @@ app.use(express.static(__dirname)); // 提供静态文件服务
 
 // Load data files
 const questionsPath = path.join(__dirname, '../题库.json');
+const mgtQuestionsPath = path.join(__dirname, '../题库_管理岗.json');
 const authCodesPath = path.join(__dirname, '../授权码.json');
 
 let questions = [];
+let mgtQuestions = [];
 let authCodes = [];
 
 const loadData = () => {
   try {
     questions = JSON.parse(fs.readFileSync(questionsPath, 'utf-8')).questions;
     authCodes = JSON.parse(fs.readFileSync(authCodesPath, 'utf-8')).codes;
+
+    // 加载管理岗题库
+    if (fs.existsSync(mgtQuestionsPath)) {
+      mgtQuestions = JSON.parse(fs.readFileSync(mgtQuestionsPath, 'utf-8')).questions;
+      console.log(`Loaded ${mgtQuestions.length} management questions.`);
+    }
   } catch (err) {
     console.error('Error loading data files:', err);
   }
@@ -153,8 +161,14 @@ const markCodeAsUsed = (code, userInfo) => {
 /**
  * 随机抽取30道题（按10个维度均衡覆盖 + 岗位筛选）
  */
-const selectRandomQuestions = (userPosition) => {
-  // 1. 简单的岗位映射归一化
+const selectRandomQuestions = (userPosition, examType = 'staff') => {
+  // 1. 如果是管理岗转型测试，直接从管理岗题库取题
+  if (examType === 'management' && mgtQuestions.length > 0) {
+    // 随机抽取 25 道题（管理岗目前的题库较小）
+    return mgtQuestions.sort(() => 0.5 - Math.random()).slice(0, 25);
+  }
+
+  // 1. 简单的岗位映射归一化 (一线员工)
   let targetPos = userPosition || '通用';
   if (targetPos.includes('咨询')) targetPos = '咨询顾问';
   else if (targetPos.includes('BD') || targetPos.includes('渠道')) targetPos = '渠道BD';
@@ -240,7 +254,11 @@ const calculateScore = (questions, answers) => {
       }
     } else {
       // 单选或判断题
-      if (userAnswer === q.answer) {
+      if (q.option_weights && !Array.isArray(userAnswer)) {
+        // 如果有权重配置，直接取对应选项的权重
+        const optionIndex = userAnswer.charCodeAt(0) - 65; // A=0, B=1...
+        qScore = q.option_weights[optionIndex] || 0;
+      } else if (userAnswer === q.answer) {
         qScore = q.score;
       }
     }
@@ -386,8 +404,11 @@ app.post('/api/start', (req, res) => {
   // 生成考试 ID
   const examId = uuidv4();
 
+  // 确定考试类型 (默认 staff)
+  const examType = req.body.examType || (position === '管理岗转型' ? 'management' : 'staff');
+
   // 随机选择题目
-  const selectedQuestions = selectRandomQuestions(position);
+  const selectedQuestions = selectRandomQuestions(position, examType);
 
   // 保存考试信息
   exams.set(examId, {
@@ -396,6 +417,7 @@ app.post('/api/start', (req, res) => {
     name,
     email,
     position,
+    examType,
     questions: selectedQuestions,
     startTime: Date.now(),
     status: 'in_progress',
